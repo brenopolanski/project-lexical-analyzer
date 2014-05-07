@@ -6,6 +6,6 @@ $javaCode = "public class HelloWorld {}";
 
 $lexicalAnalyzer = new LexicalAnalyzer($javaCode);
 
-echo $lexicalAnalyzer->getJavaCode();
+echo $lexicalAnalyzer->getParser();
 
 ?>
