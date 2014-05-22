@@ -141,6 +141,15 @@ class LexicalAnalyzer {
 		return $value;
 	}
 
+	// (1
+
+	private function test($value, $aux = 0) {
+		if ($this->isSymbol($value[$aux])) {
+			array_push($this->tokens, array("SYMBOL" => $value[$aux]));
+			test($value, $aux += 1);
+		}
+	}
+
 	/**
 	 * @method scanner
 	 */
