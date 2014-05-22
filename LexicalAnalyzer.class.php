@@ -1,19 +1,19 @@
 <?php
 
 /**
-* @author       Breno Polanski <breno.polanski@gmail.com>
-* @copyright    2014 Breno Polanski, All Rights Reserved.
-* @license      {@link http://brenopolanski.mit-license.org}
-*/
+ * @author       Breno Polanski <breno.polanski@gmail.com>
+ * @copyright    2014 Breno Polanski, All Rights Reserved.
+ * @license      {@link http://brenopolanski.mit-license.org}
+ */
 
 /**
-* The lexical analyzer Java grammar.
-* @class LexicalAnalyzer
-*/
+ * The lexical analyzer Java grammar.
+ * @class LexicalAnalyzer
+ */
 class LexicalAnalyzer {
 
 	// 
-	private $NUMBER = ['1','2','3','4','5','6','7','8','9','0'];
+	private $NUMBER = ['0','1','2','3','4','5','6','7','8','9'];
 
 	// 
 	private $LOW_LETTER = ['a','b','c','d','e','f','g','h','i',
@@ -33,78 +33,84 @@ class LexicalAnalyzer {
     private $javaCode;
     private $tokens = [];
     private $word;
+    private $passed = false;
 	
 	/**
-	* @method __construct()
-	* @param $javaCode - String with Java code.
-	*/
+	 * @method __construct()
+	 * @param $javaCode - String with Java code.
+	 */
 	public function __construct($javaCode) {
 		$this->javaCode = $javaCode;
 	}
 
 	/**
-	* @method isNumber
-	* @param $value - .
-	*/
+	 * @method isNumber
+	 * @param $value - .
+	 */
 	private function isNumber($value) {
 		if (in_array($value, $this->NUMBER)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	/**
-	* @method isLetter
-	* @param $value - .
-	*/
+	 * @method isLetter
+	 * @param $value - .
+	 */
 	private function isLetter($value) {
 		if (in_array(strtolower($value), $this->LOW_LETTER)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	/**
-	* @method isReservedWord
-	* @param $value - .
-	*/
+	 * @method isReservedWord
+	 * @param $value - .
+	 */
 	private function isReservedWord($value) {
 		if (in_array($value, $this->RESERVED_WORD)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	/**
-	* @method isSymbol
-	* @param $value - .
-	*/
+	 * @method isSymbol
+	 * @param $value - .
+	 */
 	private function isSymbol($value) {
 		if (in_array($value, $this->SYMBOL)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	/**
-	* @method isSpace
-	* @param $value - .
-	*/
+	 * @method isSpace
+	 * @param $value - .
+	 */
 	private function isSpace($value) {
-		if ($value === ' ') {
+		if ($value === " ") {
 			return true;
-		} else {
+		} 
+		else {
 			return false;
 		}
 	}
 
 	/**
-	* @method parser
-	*/
+	 * @method parser
+	 */
 	// private function parser() {
 	// 	$aux = false;
 
@@ -125,46 +131,66 @@ class LexicalAnalyzer {
 	// 	}
 	// }
 
-	// public class HelloWorld {}
+	// public class HelloWorld { }
 
-	private function parser() {
-		$aux = false;
+	/**
+	 * @method clear
+	 */
+	private function clear(&$value) {
+		$value = "";
+		return $value;
+	}
 
+	/**
+	 * @method scanner
+	 */
+	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
 			if ($this->isNumber($this->javaCode[$i]) || 
 				$this->isLetter($this->javaCode[$i]) || 
 				$this->isSymbol($this->javaCode[$i])) {
-
 				$this->word .= $this->javaCode[$i];
-
-				// array_push($this->tokens, $this->javaCode[$i]);
-				// $aux = true;
 			} 
 			elseif ($this->isSpace($this->javaCode[$i])) {
 				if ($this->isReservedWord($this->word)) {
-					// $this->word = "";
-					// echo $this->word;
-					$aux = true;
+					array_push($this->tokens, array("RESERVED_WORD" => $this->word));
+					$this->clear($this->word);
+					$this->passed = true;
 				}
-			}
+				elseif ($this->isNumber($this->word)) {
+					array_push($this->tokens, array("NUM" => $this->word));
+					$this->clear($this->word);
+					$this->passed = true;	
+				}
+				elseif ($this->isSymbol($this->word)) {
+					array_push($this->tokens, array("SYMBOL" => $this->word));
+					$this->clear($this->word);
+					$this->passed = true;	
+				}
+				else {
+					array_push($this->tokens, array("ID" => $this->word));
+					$this->clear($this->word);
+					$this->passed = true;
+				}
+			} 
 			else {
 				return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
 			}
 		}
 
-		// print_r($this->tokens);
+		print_r($this->tokens);
 		// echo $this->word;
 
-		if ($aux) {
+		if ($this->passed) {
 			return "Lexical analyzer Java: PASSED";
 		}
 	}
 
 	/**
-	* @method getParser
-	*/
-	public function getParser() {
-		return $this->parser();
+	 * @method getScanner
+	 */
+	public function getScanner() {
+		return $this->scanner();
 	}
 }
 
