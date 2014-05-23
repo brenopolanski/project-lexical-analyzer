@@ -155,8 +155,8 @@ class LexicalAnalyzer {
 		}
 		elseif ($this->isSymbol($this->javaCode[$aux])) {
 			$this->word .= $this->javaCode[$pos];
-			if (in_array($this->javaCode[$aux+=1], $arr)) {
-				$this->word .= $this->javaCode[$aux+=1];
+			if (in_array($this->javaCode[$aux], $arr)) {
+				$this->word .= $this->javaCode[$pos];
 				array_push($this->tokens, array("SYMBOL" => $this->word));
 				$this->clear($this->word);
 				$this->passed = true;
