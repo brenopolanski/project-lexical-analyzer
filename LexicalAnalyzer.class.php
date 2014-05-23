@@ -143,48 +143,100 @@ class LexicalAnalyzer {
 
 	// (1
 
-	private function test($value, $aux = 0) {
-		if ($this->isSymbol($value[$aux])) {
-			array_push($this->tokens, array("SYMBOL" => $value[$aux]));
-			test($value, $aux += 1);
+	// && ++ -- ==
+	private function comparePairsSymbols($pos) {
+		$arr = ['&','+','-','='];
+		$aux = $pos + 1;
+		if ($this->javaCode[$aux] === " ") {
+			$this->word .= $this->javaCode[$pos];
+			array_push($this->tokens, array("SYMBOL" => $this->word));
+			$this->clear($this->word);
+			$this->passed = true;	
+		}
+		elseif ($this->isSymbol($this->javaCode[$aux])) {
+			$this->word .= $this->javaCode[$pos];
+			if (in_array($this->javaCode[$aux+=1], $arr)) {
+				$this->word .= $this->javaCode[$aux+=1];
+				array_push($this->tokens, array("SYMBOL" => $this->word));
+				$this->clear($this->word);
+				$this->passed = true;
+			}
 		}
 	}
 
 	/**
 	 * @method scanner
 	 */
+
+	// public class HelloWorld { if (1 + 22) { return true } } 
+
+	// public class { if (1 + 22) { return true } } 
+
 	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
-			if ($this->isNumber($this->javaCode[$i]) || 
-				$this->isLetter($this->javaCode[$i]) || 
-				$this->isSymbol($this->javaCode[$i])) {
-				$this->word .= $this->javaCode[$i];
-			} 
-			elseif ($this->isSpace($this->javaCode[$i])) {
-				if ($this->isReservedWord($this->word)) {
-					array_push($this->tokens, array("RESERVED_WORD" => $this->word));
-					$this->clear($this->word);
-					$this->passed = true;
-				}
-				elseif ($this->isNumber($this->word)) {
-					array_push($this->tokens, array("NUM" => $this->word));
-					$this->clear($this->word);
-					$this->passed = true;	
-				}
-				elseif ($this->isSymbol($this->word)) {
-					array_push($this->tokens, array("SYMBOL" => $this->word));
-					$this->clear($this->word);
-					$this->passed = true;	
-				}
-				else {
-					array_push($this->tokens, array("ID" => $this->word));
-					$this->clear($this->word);
-					$this->passed = true;
-				}
-			} 
-			else {
-				return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+			switch ($this->javaCode[$i]) {
+				case $this->isLetter($this->javaCode[$i]):
+					$this->word .= $this->javaCode[$i];
+					break;
+
+				case $this->isSpace($this->javaCode[$i]):
+					if ($this->isReservedWord($this->word)) {
+						array_push($this->tokens, array("RESERVED_WORD" => $this->word));
+						$this->clear($this->word);
+						$this->passed = true;
+					}
+					// else {
+					// 	array_push($this->tokens, array("ID" => $this->word));
+					// 	$this->clear($this->word);
+					// 	$this->passed = true;
+					// }
+					break;
+
+				case $this->isSymbol($this->javaCode[$i]):
+					$this->comparePairsSymbols($i);
+					break;
+				
+				// default:
+				// 	return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+				// 	break;
 			}
+
+
+
+
+
+
+
+			// if ($this->isNumber($this->javaCode[$i]) || 
+			// 	$this->isLetter($this->javaCode[$i]) || 
+			// 	$this->isSymbol($this->javaCode[$i])) {
+			// 	$this->word .= $this->javaCode[$i];
+			// } 
+			// elseif ($this->isSpace($this->javaCode[$i])) {
+			// 	if ($this->isReservedWord($this->word)) {
+			// 		array_push($this->tokens, array("RESERVED_WORD" => $this->word));
+			// 		$this->clear($this->word);
+			// 		$this->passed = true;
+			// 	}
+			// 	elseif ($this->isNumber($this->word)) {
+			// 		array_push($this->tokens, array("NUM" => $this->word));
+			// 		$this->clear($this->word);
+			// 		$this->passed = true;	
+			// 	}
+			// 	elseif ($this->isSymbol($this->word)) {
+			// 		array_push($this->tokens, array("SYMBOL" => $this->word));
+			// 		$this->clear($this->word);
+			// 		$this->passed = true;	
+			// 	}
+			// 	else {
+			// 		array_push($this->tokens, array("ID" => $this->word));
+			// 		$this->clear($this->word);
+			// 		$this->passed = true;
+			// 	}
+			// } 
+			// else {
+			// 	return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+			// }
 		}
 
 		print_r($this->tokens);

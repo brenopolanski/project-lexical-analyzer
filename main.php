@@ -4,7 +4,9 @@
 
 // $javaCode = "public class HelloWorld { } ";
 
-$javaCode = "public class HelloWorld { if ( 1 + 1 ) { return true } } ";
+// $javaCode = "public class HelloWorld { if (1 + 22) { return true } } ";
+
+$javaCode = "public class { if (1 +! 22) { return true } } ";
 
 $lexicalAnalyzer = new LexicalAnalyzer($javaCode);
 
