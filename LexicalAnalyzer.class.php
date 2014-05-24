@@ -27,12 +27,12 @@ class LexicalAnalyzer {
     						  "void","main","true","false","extends"];
 
     //
-    private $SYMBOL = ['(',')','&','<','+','*','!','-','{',
-                       '}','.','=',';','[',']','"',','];
+    private $OPERATOR = ['(',')','&','<','>','+','*','!','-',
+                       '{','}','.','=',';','[',']','"',','];
 
     private $javaCode;
-    private $tokens = [];
-    private $word;
+    private $tokensTable = [];
+    private $token;
     private $passed = false;
 	
 	/**
@@ -45,10 +45,10 @@ class LexicalAnalyzer {
 
 	/**
 	 * @method isNumber
-	 * @param $value - .
+	 * @param $token - .
 	 */
-	private function isNumber($value) {
-		if (in_array($value, $this->NUMBER)) {
+	private function isNumber($token) {
+		if (in_array($token, $this->NUMBER)) {
 			return true;
 		}
 		else {
@@ -58,10 +58,10 @@ class LexicalAnalyzer {
 
 	/**
 	 * @method isLetter
-	 * @param $value - .
+	 * @param $token - .
 	 */
-	private function isLetter($value) {
-		if (in_array(strtolower($value), $this->LOW_LETTER)) {
+	private function isLetter($token) {
+		if (in_array(strtolower($token), $this->LOW_LETTER)) {
 			return true;
 		}
 		else {
@@ -70,11 +70,11 @@ class LexicalAnalyzer {
 	}
 
 	/**
-	 * @method isReservedWord
-	 * @param $value - .
+	 * @method isReservedtoken
+	 * @param $token - .
 	 */
-	private function isReservedWord($value) {
-		if (in_array($value, $this->RESERVED_WORD)) {
+	private function isReservedtoken($token) {
+		if (in_array($token, $this->RESERVED_WORD)) {
 			return true;
 		}
 		else {
@@ -83,11 +83,11 @@ class LexicalAnalyzer {
 	}
 
 	/**
-	 * @method isSymbol
-	 * @param $value - .
+	 * @method isOperator
+	 * @param $token - .
 	 */
-	private function isSymbol($value) {
-		if (in_array($value, $this->SYMBOL)) {
+	private function isOperator($token) {
+		if (in_array($token, $this->OPERATOR)) {
 			return true;
 		}
 		else {
@@ -97,10 +97,10 @@ class LexicalAnalyzer {
 
 	/**
 	 * @method isSpace
-	 * @param $value - .
+	 * @param $token - .
 	 */
-	private function isSpace($value) {
-		if ($value === " ") {
+	private function isSpace($token) {
+		if ($token === " ") {
 			return true;
 		} 
 		else {
@@ -117,12 +117,12 @@ class LexicalAnalyzer {
 	// 	for ($i = 0; $i < strlen($this->javaCode); $i++) { 
 	// 		if ($this->isNumber($this->javaCode[$i]) || 
 	// 			$this->isLetter($this->javaCode[$i]) || 
-	// 			$this->isSymbol($this->javaCode[$i]) ||
+	// 			$this->isOperator($this->javaCode[$i]) ||
 	// 			$this->isSpace($this->javaCode[$i])) {
 	// 			$aux = true;
 	// 		} 
 	// 		else {
-	// 			return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+	// 			return "Lexical analyzer Java: DENIED <br> Operator error => ".$this->javaCode[$i];
 	// 		}
 	// 	}
 
@@ -136,32 +136,74 @@ class LexicalAnalyzer {
 	/**
 	 * @method clear
 	 */
-	private function clear(&$value) {
-		$value = "";
-		return $value;
+	private function clear(&$token) {
+		$token = "";
+		return $token;
 	}
 
 	// (1
 
-	// && ++ -- ==
-	private function comparePairsSymbols($pos) {
-		$arr = ['&','+','-','='];
+	/* ------------------
+	 * | Pair operators |
+	 * |----------------|
+	 * |	   &&       |
+	 * |----------------|
+	 * |	   ||       |
+	 * |----------------|
+	 * |	   ==       |
+	 * |----------------|
+	 * |	   !=       |
+	 * |----------------|
+	 * |	   <=       |
+	 * |----------------|
+	 * |	   >=       |
+	 * |----------------|
+	 * |	   ++       |
+	 * |----------------|
+	 * |	   --       |
+	 * |----------------|
+	 * |	   +=       |
+	 * |----------------|
+	 * |	   -=       |
+	 * |----------------|
+	 * |	   *=       |
+	 * |----------------|
+	 */
+	// public class { if (1 +! 22) { return true } }
+	private function comparePairsOperators($pos) {
+		$arr = ['&','|','=','!','<','>','+','-','*'];
 		$aux = $pos + 1;
-		if ($this->javaCode[$aux] === " ") {
-			$this->word .= $this->javaCode[$pos];
-			array_push($this->tokens, array("SYMBOL" => $this->word));
-			$this->clear($this->word);
-			$this->passed = true;	
+		$this->token .= $this->javaCode[$pos];
+		if (in_array($this->javaCode[$aux], $arr)) {
+			$this->token .= $this->javaCode[$aux];
+			array_push($this->tokensTable, array("OPERATOR" => $this->token));
+			$this->clear($this->token);
+			$this->passed = true;
 		}
-		elseif ($this->isSymbol($this->javaCode[$aux])) {
-			$this->word .= $this->javaCode[$pos];
-			if (in_array($this->javaCode[$aux], $arr)) {
-				$this->word .= $this->javaCode[$pos];
-				array_push($this->tokens, array("SYMBOL" => $this->word));
-				$this->clear($this->word);
-				$this->passed = true;
-			}
+		else {
+			array_push($this->tokensTable, array("OPERATOR" => $this->token));
+			$this->clear($this->token);
+			$this->passed = true;
 		}
+
+
+
+		// $aux = $pos + 1;
+		// if ($this->javaCode[$aux] === " ") {
+		// 	$this->token .= $this->javaCode[$pos];
+		// 	array_push($this->tokensTable, array("OPERATOR" => $this->token));
+		// 	$this->clear($this->token);
+		// 	$this->passed = true;	
+		// }
+		// elseif ($this->isOperator($this->javaCode[$aux])) {
+		// 	$this->token .= $this->javaCode[$pos];
+		// 	if (in_array($this->javaCode[$aux], $arr)) {
+		// 		$this->token .= $this->javaCode[$pos];
+		// 		array_push($this->tokensTable, array("OPERATOR" => $this->token));
+		// 		$this->clear($this->token);
+		// 		$this->passed = true;
+		// 	}
+		// }
 	}
 
 	/**
@@ -170,34 +212,35 @@ class LexicalAnalyzer {
 
 	// public class HelloWorld { if (1 + 22) { return true } } 
 
-	// public class { if (1 + 22) { return true } } 
+	// public class { if (1 +! 22) { return true } } 
 
 	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
 			switch ($this->javaCode[$i]) {
 				case $this->isLetter($this->javaCode[$i]):
-					$this->word .= $this->javaCode[$i];
+					$this->token .= $this->javaCode[$i];
 					break;
 
 				case $this->isSpace($this->javaCode[$i]):
-					if ($this->isReservedWord($this->word)) {
-						array_push($this->tokens, array("RESERVED_WORD" => $this->word));
-						$this->clear($this->word);
+					if ($this->isReservedtoken($this->token)) {
+						array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
+						$this->clear($this->token);
 						$this->passed = true;
 					}
 					// else {
-					// 	array_push($this->tokens, array("ID" => $this->word));
-					// 	$this->clear($this->word);
+					// 	array_push($this->tokensTable, array("ID" => $this->token));
+					// 	$this->clear($this->token);
 					// 	$this->passed = true;
 					// }
 					break;
 
-				case $this->isSymbol($this->javaCode[$i]):
-					$this->comparePairsSymbols($i);
+				case $this->isOperator($this->javaCode[$i]):
+					// echo $this->javaCode[$i]."<br>"; 
+					$this->comparePairsOperators($i);
 					break;
 				
 				// default:
-				// 	return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+				// 	return "Lexical analyzer Java: DENIED <br> Operator error => ".$this->javaCode[$i];
 				// 	break;
 			}
 
@@ -209,38 +252,38 @@ class LexicalAnalyzer {
 
 			// if ($this->isNumber($this->javaCode[$i]) || 
 			// 	$this->isLetter($this->javaCode[$i]) || 
-			// 	$this->isSymbol($this->javaCode[$i])) {
-			// 	$this->word .= $this->javaCode[$i];
+			// 	$this->isOperator($this->javaCode[$i])) {
+			// 	$this->token .= $this->javaCode[$i];
 			// } 
 			// elseif ($this->isSpace($this->javaCode[$i])) {
-			// 	if ($this->isReservedWord($this->word)) {
-			// 		array_push($this->tokens, array("RESERVED_WORD" => $this->word));
-			// 		$this->clear($this->word);
+			// 	if ($this->isReservedtoken($this->token)) {
+			// 		array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
+			// 		$this->clear($this->token);
 			// 		$this->passed = true;
 			// 	}
-			// 	elseif ($this->isNumber($this->word)) {
-			// 		array_push($this->tokens, array("NUM" => $this->word));
-			// 		$this->clear($this->word);
+			// 	elseif ($this->isNumber($this->token)) {
+			// 		array_push($this->tokensTable, array("NUM" => $this->token));
+			// 		$this->clear($this->token);
 			// 		$this->passed = true;	
 			// 	}
-			// 	elseif ($this->isSymbol($this->word)) {
-			// 		array_push($this->tokens, array("SYMBOL" => $this->word));
-			// 		$this->clear($this->word);
+			// 	elseif ($this->isOperator($this->token)) {
+			// 		array_push($this->tokensTable, array("OPERATOR" => $this->token));
+			// 		$this->clear($this->token);
 			// 		$this->passed = true;	
 			// 	}
 			// 	else {
-			// 		array_push($this->tokens, array("ID" => $this->word));
-			// 		$this->clear($this->word);
+			// 		array_push($this->tokensTable, array("ID" => $this->token));
+			// 		$this->clear($this->token);
 			// 		$this->passed = true;
 			// 	}
 			// } 
 			// else {
-			// 	return "Lexical analyzer Java: DENIED <br> Symbol error => ".$this->javaCode[$i];
+			// 	return "Lexical analyzer Java: DENIED <br> Operator error => ".$this->javaCode[$i];
 			// }
 		}
 
-		print_r($this->tokens);
-		// echo $this->word;
+		print_r($this->tokensTable);
+		// echo $this->token;
 
 		if ($this->passed) {
 			return "Lexical analyzer Java: PASSED";
