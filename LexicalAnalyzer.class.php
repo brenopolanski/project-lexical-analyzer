@@ -147,8 +147,8 @@ class LexicalAnalyzer {
 	 * @param $pos - .
 	 */
 	private function comparePairsOperators(&$pos) {
-		$arr = ['&&','||','==','!=','<=','>=',
-		        '++','--','+=','-=','*='];
+		$arr = ["&&","||","==","!=","<=",">=",
+		        "++","--","+=","-=","*="];
 		$auxPos = $pos + 1;
 		$auxToken = $this->javaCode[$pos].$this->javaCode[$auxPos];
 		$this->token = $this->javaCode[$pos];
@@ -172,7 +172,7 @@ class LexicalAnalyzer {
 	 * @param $pos - .
 	 */
 	private function checkWord(&$pos) {
-		$this->token .= $this->javaCode[$pos];
+		$this->token .= $this->isLetter($this->javaCode[$pos]) ? $this->javaCode[$pos] : "" ;
 		if ($this->isReservedtoken($this->token)) {
 			array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
 			$this->clear($this->token);
@@ -182,6 +182,7 @@ class LexicalAnalyzer {
 			    $this->isOperator($this->javaCode[$pos])) {
 					array_push($this->tokensTable, array("ID" => $this->token));
 					$this->clear($this->token);
+					$pos -= 1;
 					$this->passed = true;
 		}
 		else {
@@ -194,7 +195,7 @@ class LexicalAnalyzer {
 	 * @method scanner
 	 */
 
-	// public class HelloWorld { if (1 + 22) { return true } } 
+	// public class HelloWorld{ if (1 + 22) { return true } } 
 
 	// public class{ if(1 == 22) { return true } } 
 
