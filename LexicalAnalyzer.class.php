@@ -157,7 +157,7 @@ class LexicalAnalyzer {
 			$this->token = $auxToken;
 			array_push($this->tokensTable, array("OPERATOR" => $this->token));
 			$this->clear($this->token);
-			$pos += 1;
+			$pos = $auxPos;
 			$this->passed = true;
 		}
 		else {
@@ -168,35 +168,44 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * @method checkWord
+	 * @param $pos - .
+	 */
+	private function checkWord(&$pos) {
+		$this->token .= $this->javaCode[$pos];
+		if ($this->isReservedtoken($this->token)) {
+			array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
+			$this->clear($this->token);
+			$this->passed = true;
+		}
+		elseif ($this->isSpace($this->javaCode[$pos]) || 
+			    $this->isOperator($this->javaCode[$pos])) {
+					array_push($this->tokensTable, array("ID" => $this->token));
+					$this->clear($this->token);
+					$this->passed = true;
+		}
+		else {
+			$pos += 1;
+			$this->checkWord($pos);
+		}
+	}
+
+	/**
 	 * @method scanner
 	 */
 
 	// public class HelloWorld { if (1 + 22) { return true } } 
 
-	// public class { if (1 +! 22) { return true } } 
+	// public class{ if(1 == 22) { return true } } 
 
 	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
 			switch ($this->javaCode[$i]) {
 				case $this->isLetter($this->javaCode[$i]):
-					$this->token .= $this->javaCode[$i];
-					break;
-
-				case $this->isSpace($this->javaCode[$i]):
-					if ($this->isReservedtoken($this->token)) {
-						array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
-						$this->clear($this->token);
-						$this->passed = true;
-					}
-					// else {
-					// 	array_push($this->tokensTable, array("ID" => $this->token));
-					// 	$this->clear($this->token);
-					// 	$this->passed = true;
-					// }
+					$this->checkWord($i);
 					break;
 
 				case $this->isOperator($this->javaCode[$i]):
-					// echo $this->javaCode[$i]."<br>"; 
 					$this->comparePairsOperators($i);
 					break;
 				
