@@ -135,49 +135,29 @@ class LexicalAnalyzer {
 
 	/**
 	 * @method clear
+	 * @param $token - .
 	 */
 	private function clear(&$token) {
 		$token = "";
 		return $token;
 	}
 
-	// (1
-
-	/* ------------------
-	 * | Pair operators |
-	 * |----------------|
-	 * |	   &&       |
-	 * |----------------|
-	 * |	   ||       |
-	 * |----------------|
-	 * |	   ==       |
-	 * |----------------|
-	 * |	   !=       |
-	 * |----------------|
-	 * |	   <=       |
-	 * |----------------|
-	 * |	   >=       |
-	 * |----------------|
-	 * |	   ++       |
-	 * |----------------|
-	 * |	   --       |
-	 * |----------------|
-	 * |	   +=       |
-	 * |----------------|
-	 * |	   -=       |
-	 * |----------------|
-	 * |	   *=       |
-	 * |----------------|
+	/**
+	 * @method comparePairsOperators
+	 * @param $pos - .
 	 */
-	// public class { if (1 +! 22) { return true } }
-	private function comparePairsOperators($pos) {
-		$arr = ['&','|','=','!','<','>','+','-','*'];
-		$aux = $pos + 1;
-		$this->token .= $this->javaCode[$pos];
-		if (in_array($this->javaCode[$aux], $arr)) {
-			$this->token .= $this->javaCode[$aux];
+	private function comparePairsOperators(&$pos) {
+		$arr = ['&&','||','==','!=','<=','>=',
+		        '++','--','+=','-=','*='];
+		$auxPos = $pos + 1;
+		$auxToken = $this->javaCode[$pos].$this->javaCode[$auxPos];
+		$this->token = $this->javaCode[$pos];
+
+		if ($this->isOperator($this->javaCode[$auxPos]) && (in_array($auxToken, $arr))) {
+			$this->token = $auxToken;
 			array_push($this->tokensTable, array("OPERATOR" => $this->token));
 			$this->clear($this->token);
+			$pos += 1;
 			$this->passed = true;
 		}
 		else {
@@ -185,25 +165,6 @@ class LexicalAnalyzer {
 			$this->clear($this->token);
 			$this->passed = true;
 		}
-
-
-
-		// $aux = $pos + 1;
-		// if ($this->javaCode[$aux] === " ") {
-		// 	$this->token .= $this->javaCode[$pos];
-		// 	array_push($this->tokensTable, array("OPERATOR" => $this->token));
-		// 	$this->clear($this->token);
-		// 	$this->passed = true;	
-		// }
-		// elseif ($this->isOperator($this->javaCode[$aux])) {
-		// 	$this->token .= $this->javaCode[$pos];
-		// 	if (in_array($this->javaCode[$aux], $arr)) {
-		// 		$this->token .= $this->javaCode[$pos];
-		// 		array_push($this->tokensTable, array("OPERATOR" => $this->token));
-		// 		$this->clear($this->token);
-		// 		$this->passed = true;
-		// 	}
-		// }
 	}
 
 	/**
