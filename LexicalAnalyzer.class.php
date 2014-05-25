@@ -31,8 +31,9 @@ class LexicalAnalyzer {
                        '{','}','.','=',';','[',']','"',','];
 
     private $javaCode;
-    private $tokensTable = [];
     private $token;
+    private $tokensTable = [];
+    private $tokenInvalid;
     private $passed = false;
 	
 	/**
@@ -146,24 +147,30 @@ class LexicalAnalyzer {
 	 * @param $pos - .
 	 */
 	private function checkWord(&$pos) {
-		$this->token .= ($this->isLetter($this->javaCode[$pos]) || 
-						 $this->isNumber($this->javaCode[$pos])) ? $this->javaCode[$pos] : "";
+		if ($this->isLetter($this->javaCode[$pos]) || $this->isNumber($this->javaCode[$pos])) {
+			$this->token .= $this->javaCode[$pos];		
 
-		if ($this->isReservedToken($this->token)) {
-			array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
-			$this->clear($this->token);
-			$this->passed = true;
-		}
+			if ($this->isReservedToken($this->token)) {
+				array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
+				$this->clear($this->token);
+				$this->passed = true;
+			}
+			else {
+				$pos += 1;
+				$this->checkWord($pos);
+			}
+		} 
 		elseif ($this->isSpace($this->javaCode[$pos]) || 
 			    $this->isOperator($this->javaCode[$pos])) {
 					array_push($this->tokensTable, array("ID" => $this->token));
 					$this->clear($this->token);
 					$pos -= 1;
 					$this->passed = true;
-		}
+		} 
 		else {
-			$pos += 1;
-			$this->checkWord($pos);
+			$this->tokenInvalid = $this->javaCode[$pos];
+			$pos = strlen($this->javaCode);
+			$this->passed = false;
 		}
 	}
 
@@ -214,6 +221,9 @@ class LexicalAnalyzer {
 
 		if ($this->passed) {
 			return "Lexical analyzer Java: PASSED";
+		}
+		else {
+			return "Lexical analyzer Java: DENIED <br> Token error => ".$this->tokenInvalid;
 		}
 	}
 
