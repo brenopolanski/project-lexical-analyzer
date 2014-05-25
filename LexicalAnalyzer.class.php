@@ -146,14 +146,18 @@ class LexicalAnalyzer {
 	 * @method checkWord
 	 * @param $pos - .
 	 */
+	// publicclass
 	private function checkWord(&$pos) {
 		if ($this->isLetter($this->javaCode[$pos]) || $this->isNumber($this->javaCode[$pos])) {
 			$this->token .= $this->javaCode[$pos];		
 
 			if ($this->isReservedToken($this->token)) {
-				array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
-				$this->clear($this->token);
-				$this->passed = true;
+				if ($this->isSpace($this->javaCode[$pos+1]) || 
+			    	$this->isOperator($this->javaCode[$pos+1])) {
+						array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
+						$this->clear($this->token);
+						$this->passed = true;
+				}
 			}
 			else {
 				$pos += 1;
