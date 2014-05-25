@@ -70,10 +70,10 @@ class LexicalAnalyzer {
 	}
 
 	/**
-	 * @method isReservedtoken
+	 * @method isReservedToken
 	 * @param $token - .
 	 */
-	private function isReservedtoken($token) {
+	private function isReservedToken($token) {
 		if (in_array($token, $this->RESERVED_WORD)) {
 			return true;
 		}
@@ -149,7 +149,7 @@ class LexicalAnalyzer {
 		$this->token .= ($this->isLetter($this->javaCode[$pos]) || 
 						 $this->isNumber($this->javaCode[$pos])) ? $this->javaCode[$pos] : "";
 
-		if ($this->isReservedtoken($this->token)) {
+		if ($this->isReservedToken($this->token)) {
 			array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
 			$this->clear($this->token);
 			$this->passed = true;
@@ -190,24 +190,22 @@ class LexicalAnalyzer {
 	 */
 	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
-			switch ($this->javaCode[$i]) {
-				case $this->isLetter($this->javaCode[$i]):
-					$this->checkWord($i);
-					break;
-				case $this->isNumber($this->javaCode[$i]):
-					$this->mergeNumber($i);
-					break;
-				case $this->isOperator($this->javaCode[$i]):
-					$this->comparePairsOperators($i);
-					break;
-				default:
-					if ($this->isSpace($this->javaCode[$i])) {
-						$this->passed = true;	
-					}
-					else {
-						return "Lexical analyzer Java: DENIED <br> Operator error => ".$this->javaCode[$i];
-					}
-					break;
+			if ($this->isLetter($this->javaCode[$i])) {
+				$this->checkWord($i);
+			}
+			elseif ($this->isNumber($this->javaCode[$i])) {
+				$this->mergeNumber($i);
+			}
+			elseif ($this->isOperator($this->javaCode[$i])) {
+				$this->comparePairsOperators($i);
+			}
+			else {
+				if ($this->isSpace($this->javaCode[$i])) {
+					$this->passed = true;	
+				}
+				else {
+					return "Lexical analyzer Java: DENIED <br> Token error => ".$this->javaCode[$i];
+				}
 			}
 		}
 
