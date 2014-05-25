@@ -231,11 +231,12 @@ class LexicalAnalyzer {
 			}
 		}
 
-		print_r($this->tokensTable);
+		// print_r($this->tokensTable);
 		// echo $this->token;
 
 		if ($this->passed) {
-			return "Lexical analyzer Java: PASSED";
+			// return "Lexical analyzer Java: PASSED";
+			return $this->tokensTable;
 		}
 		else {
 			return "Lexical analyzer Java: DENIED <br> Token error => ".$this->tokenInvalid;
