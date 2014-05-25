@@ -12,21 +12,22 @@
  */
 class LexicalAnalyzer {
 
-	// 
+	// Constant of numbers
 	private $NUMBER = ['0','1','2','3','4','5','6','7','8','9'];
 
-	// 
+	// Constant of letters
 	private $LOW_LETTER = ['a','b','c','d','e','f','g','h','i',
 	                       'j','k','l','m','n','o','p','q','r',
 	                       's','t','u','v','w','x','y','z'];
-
+    
+    // Constant of reserved words
     private $RESERVED_WORD = ["while","if","else","public","private",
     						  "class","new","length","System",
     						  "out","println","return","int",
     						  "boolean","String","static","double",
     						  "void","main","true","false","extends"];
 
-    //
+    // Constant of operators
     private $OPERATOR = ['(',')','&','<','>','+','*','!','-',
                        '{','}','.','=',';','[',']','"',','];
 
@@ -45,8 +46,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Checks whether the token is a number.
 	 * @method isNumber
-	 * @param $token - .
+	 * @param {String} $token.
 	 */
 	private function isNumber($token) {
 		if (in_array($token, $this->NUMBER)) {
@@ -58,8 +60,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Checks whether the token is a letter.
 	 * @method isLetter
-	 * @param $token - .
+	 * @param {String} $token.
 	 */
 	private function isLetter($token) {
 		if (in_array(strtolower($token), $this->LOW_LETTER)) {
@@ -71,10 +74,11 @@ class LexicalAnalyzer {
 	}
 
 	/**
-	 * @method isReservedToken
-	 * @param $token - .
+     * Checks whether the token is a reserved word.
+	 * @method isReservedWord
+	 * @param {String} $token.
 	 */
-	private function isReservedToken($token) {
+	private function isReservedWord($token) {
 		if (in_array($token, $this->RESERVED_WORD)) {
 			return true;
 		}
@@ -84,8 +88,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Checks whether the token is a operator.
 	 * @method isOperator
-	 * @param $token - .
+	 * @param {String} $token.
 	 */
 	private function isOperator($token) {
 		if (in_array($token, $this->OPERATOR)) {
@@ -97,8 +102,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Checks whether the token is a space.
 	 * @method isSpace
-	 * @param $token - .
+	 * @param {String} $token.
 	 */
 	private function isSpace($token) {
 		if ($token === " ") {
@@ -110,8 +116,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Clear token.
 	 * @method clear
-	 * @param $token - .
+	 * @param {String} $token.
 	 */
 	private function clear(&$token) {
 		$token = "";
@@ -119,8 +126,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Compare pairs of operators.
 	 * @method comparePairsOperators
-	 * @param $pos - .
+	 * @param {String} $pos - Position of token.
 	 */
 	private function comparePairsOperators(&$pos) {
 		$arr = ["&&","||","==","!=","<=",">=",
@@ -143,15 +151,15 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Checks whether word is a reserved word or id.
 	 * @method checkWord
-	 * @param $pos - .
+	 * @param {String} $pos - Position of token.
 	 */
-	// publicclass
 	private function checkWord(&$pos) {
 		if ($this->isLetter($this->javaCode[$pos]) || $this->isNumber($this->javaCode[$pos])) {
 			$this->token .= $this->javaCode[$pos];		
 
-			if ($this->isReservedToken($this->token)) {
+			if ($this->isReservedWord($this->token)) {
 				if ($this->isSpace($this->javaCode[$pos+1]) || 
 			    	$this->isOperator($this->javaCode[$pos+1])) {
 						array_push($this->tokensTable, array("RESERVED_WORD" => $this->token));
@@ -179,15 +187,16 @@ class LexicalAnalyzer {
 	}
 
 	/**
-	 * @method mergeNumber
-	 * @param $pos - .
+	 * Merge numbers.
+	 * @method mergeNumbers
+	 * @param {String} $pos - Position of token.
 	 */
-	private function mergeNumber(&$pos) {
+	private function mergeNumbers(&$pos) {
 		$this->token .= $this->javaCode[$pos];
 
 		if ($this->isNumber($this->javaCode[$pos+1])) {
 			$pos += 1;
-			$this->mergeNumber($pos);
+			$this->mergeNumbers($pos);
 		}
 		else {
 			array_push($this->tokensTable, array("NUM" => $this->token));
@@ -197,7 +206,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Scanner Java code and separates tokens (RESERVED_WORD, ID, NUM and OPERATOR).
 	 * @method scanner
+	 * @return {String} Lexical analyzer Java: PASSED or DENIED
 	 */
 	private function scanner() {
 		for ($i = 0; $i < strlen($this->javaCode); $i++) { 
@@ -205,7 +216,7 @@ class LexicalAnalyzer {
 				$this->checkWord($i);
 			}
 			elseif ($this->isNumber($this->javaCode[$i])) {
-				$this->mergeNumber($i);
+				$this->mergeNumbers($i);
 			}
 			elseif ($this->isOperator($this->javaCode[$i])) {
 				$this->comparePairsOperators($i);
@@ -232,7 +243,9 @@ class LexicalAnalyzer {
 	}
 
 	/**
+	 * Return table with tokens (RESERVED_WORD, ID, NUM and OPERATOR).
 	 * @method getScanner
+	 * @return {Array} Table with tokens.
 	 */
 	public function getScanner() {
 		return $this->scanner();
