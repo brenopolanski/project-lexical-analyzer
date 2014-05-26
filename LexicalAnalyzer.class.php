@@ -226,20 +226,22 @@ class LexicalAnalyzer {
 					$this->passed = true;	
 				}
 				else {
-					return "Lexical analyzer Java: DENIED <br> Token error => ".$this->javaCode[$i];
+					// return "Lexical analyzer Java: DENIED <br> Token error => ".$this->javaCode[$i];
+					// return '{"error":"Lexical analyzer Java: DENIED"}';
+					return '{"error":"Ocorreu um erro na Análise Léxica. Token >> '.$this->javaCode[$i].'"}';
 				}
 			}
 		}
 
-		// print_r($this->tokensTable);
-		// echo $this->token;
-
 		if ($this->passed) {
-			return "Lexical analyzer Java: PASSED";
 			// return $this->tokensTable;
+			// return '{"ok":"Lexical analyzer Java: PASSED"}';
+			return '{"ok":"Análise Léxica passou com sucesso!!"}';
 		}
 		else {
-			return "Lexical analyzer Java: DENIED <br> Token error => ".$this->tokenInvalid;
+			// return "Lexical analyzer Java: DENIED <br> Token error => ".$this->tokenInvalid;
+			// return '{"error":"Lexical analyzer Java: DENIED"}';
+			return '{"error":"Ocorreu um erro na Análise Léxica. Token >> '.$this->javaCode[$i].'"}';
 		}
 	}
 

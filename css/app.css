@@ -58,8 +58,32 @@
 	left: 5px;
 }
 
+.msg-ok {
+	font: italic small-caps bold 14px "Comic Sans MS", sans-serif;
+	color: #2980b9;
+}
+
+.msg-error {
+	font: italic small-caps bold 14px "Comic Sans MS", sans-serif;
+	color: #c0392b;
+}
+
 #btn-run {
+	font: italic small-caps bold 14px "Comic Sans MS", sans-serif;
+	text-transform: uppercase;
+	background-color: #27ae60;
+	color: white;
 	position: absolute;
-	top: 2px;
-	right: 5px;
+	border: 1px solid #666;
+	border-left: 4px solid #666;
+	right: 0;
+	width: 100px;
+	height: 100%;
+	outline: none;
+	cursor: pointer;
+}
+
+#btn-run:hover {
+	background-color: #2ecc71;
+	text-shadow: 1px 1px 1px #000;
 }

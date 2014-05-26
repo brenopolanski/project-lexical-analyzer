@@ -14,8 +14,8 @@
 	}
 }</div>
 	<div id="console">
-		<a href="javascript:void(0)" id="btn-run">Executar</a>
 		<span id="msg"></span>
+		<button id="btn-run">Executar</button>
 	</div>
 	
 	<!-- JavaScript -->
@@ -33,11 +33,34 @@
 		    	$.post('main.php', {
 		    		javaCode: editor.getValue()
 		    	}, function(data) {
-		    		// alert(data);
-		    		$('#msg').text(data);
-		    	});
+		    		if (data.ok) {
+		    			$('#msg').removeClass('msg-error');
+		    			$('#msg').addClass('msg-ok');
+		    			$('#msg').text(data.ok);
+		    		} else {
+		    			$('#msg').removeClass('msg-ok');
+		    			$('#msg').addClass('msg-error');
+		    			$('#msg').text(data.error);
+		    		}
+		    	}, 'json');
 		    },
 			readOnly: true
+		});
+
+		$('#btn-run').on('click', function() {
+			$.post('main.php', {
+	    		javaCode: editor.getValue()
+	    	}, function(data) {
+	    		if (data.ok) {
+	    			$('#msg').removeClass('msg-error');
+	    			$('#msg').addClass('msg-ok');
+	    			$('#msg').text(data.ok);
+	    		} else {
+	    			$('#msg').removeClass('msg-ok');
+	    			$('#msg').addClass('msg-error');
+	    			$('#msg').text(data.error);
+	    		}
+	    	}, 'json');
 		});
 	</script>
 </body>
