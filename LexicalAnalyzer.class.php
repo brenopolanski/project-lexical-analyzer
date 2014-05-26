@@ -107,7 +107,7 @@ class LexicalAnalyzer {
 	 * @param {String} $token.
 	 */
 	private function isSpace($token) {
-		if ($token === " ") {
+		if ($token === " " || $token === "	" ) {
 			return true;
 		} 
 		else {
@@ -235,8 +235,8 @@ class LexicalAnalyzer {
 		// echo $this->token;
 
 		if ($this->passed) {
-			// return "Lexical analyzer Java: PASSED";
-			return $this->tokensTable;
+			return "Lexical analyzer Java: PASSED";
+			// return $this->tokensTable;
 		}
 		else {
 			return "Lexical analyzer Java: DENIED <br> Token error => ".$this->tokenInvalid;

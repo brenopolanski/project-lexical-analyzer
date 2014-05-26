@@ -1,0 +1,65 @@
+/**
+ * Description: Short description.
+ * Version: 1.0.0
+ * Last update: YYYY/MM/DD
+ * Author: User Name <username@gmail.com>
+ *
+ * Summary:
+ *
+ *	0. ELEMENT
+ *		- 0.1. TYPE ELEMENT
+ *		- 0.2. TYPE ELEMENT
+ *	1. ELEMENT
+ *		- 1.1. TYPE ELEMENT
+ *		- 1.2. TYPE ELEMENT
+ */
+
+/* ==========================================================================
+   0. ELEMENT
+   ========================================================================== */
+
+/* 0.1. TYPE ELEMENT
+   ========================================================================== */
+
+/* 0.2. TYPE ELEMENT
+   ========================================================================== */
+
+#editor {
+	font-size: 18px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+#console {
+	position: absolute;
+	background-color: #F0F0F0;
+	border: 3px solid #666;
+	top: 92%;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 999;
+}
+
+#console:before {
+	content: "Console:";
+	font: italic small-caps bold 14px "Comic Sans MS", sans-serif;
+	position: absolute;
+	top: 2px;
+	left: 5px;
+}
+
+#msg {
+	position: absolute;
+	top: 25px;
+	left: 5px;
+}
+
+#btn-run {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+}

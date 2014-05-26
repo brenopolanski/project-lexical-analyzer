@@ -13,12 +13,24 @@
 
 // $javaCode = 'public class HelloWorld { public static void main(String args[]) { System.out.println("Hello, World!!!"); } } ';
 
-$javaCode = 'public class HelloWorld ';
+// $javaCode = 'public class HelloWorld ';
+
+// $javaCode = 'public class HelloWorld {
+// 	public static void main(String args[]) {
+// 		System.out.println("Hello, World!!!");
+// 	}
+// }';
+
+extract($_POST);
+
+$javaCode = preg_replace("/\n/"," ",$javaCode)." ";
 
 $lexicalAnalyzer = new LexicalAnalyzer($javaCode);
-$syntacticAnalyzer = new SyntacticAnalyzer($lexicalAnalyzer->getScanner());
+// $syntacticAnalyzer = new SyntacticAnalyzer($lexicalAnalyzer->getScanner());
 
+// echo $javaCode;
+echo $lexicalAnalyzer->getScanner();
 // print_r($lexicalAnalyzer->getScanner());
-print_r($syntacticAnalyzer->getTokensTable());
+// print_r($syntacticAnalyzer->getTokensTable());
 
 ?>
